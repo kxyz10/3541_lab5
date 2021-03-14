@@ -27,9 +27,8 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	 */
 	Vector3 ComputePointOnCatmullRomCurve(double u, int segmentNumber)
 	{
-		Vector3 point = new Vector3();
+		Vector3 point;
 		int lastPoint = controlPoints.Length - 1;
-		// cant multipy vectors by doubles
 		float t = 0.5f;
 
 		//pi-2, pi-1, pi, pi+1
@@ -38,40 +37,9 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		Vector3 pi;
 		Vector3 pip1;
 
-
-
-		//if (segmentNumber == lastPoint)
-		//{
-		//	p0 = controlPoints[segmentNumber-1];
-		//	p1 = controlPoints[segmentNumber];
-		//	p0p = t * (controlPoints[segmentNumber] - controlPoints[segmentNumber-2]);
-		//	p1p = t * (controlPoints[0] - controlPoints[segmentNumber-1]);
-		//}
-		//      else if(segmentNumber == 0)
-		//      {
-		//	p0 = controlPoints[lastPoint];
-		//	p1 = controlPoints[segmentNumber];
-		//	p0p = t * (controlPoints[segmentNumber] - controlPoints[lastPoint - 1]);
-		//	p1p = t * (controlPoints[segmentNumber + 1] - controlPoints[lastPoint]);
-		//}
-		//      else if(segmentNumber == 1)
-		//      {
-		//	p0 = controlPoints[segmentNumber - 1];
-		//	p1 = controlPoints[segmentNumber];
-		//	p0p = t * (controlPoints[segmentNumber] - controlPoints[lastPoint]);
-		//	p1p = t * (controlPoints[segmentNumber + 1] - controlPoints[segmentNumber - 1]);
-		//}
-		//      else
-		//      {
-		//	p0 = controlPoints[segmentNumber - 1];
-		//	p1 = controlPoints[segmentNumber];
-		//	p0p = t * (controlPoints[segmentNumber] - controlPoints[lastPoint]);
-		//	p1p = t * (controlPoints[segmentNumber + 1] - controlPoints[segmentNumber - 1]);
-		//}
-
 		if (segmentNumber == lastPoint)
 		{
-			pim2 = controlPoints[segmentNumber-2];
+			pim2 = controlPoints[segmentNumber - 2];
 			pim1 = controlPoints[segmentNumber - 1];
 			pi = controlPoints[segmentNumber];
 			pip1 = controlPoints[0];
@@ -98,12 +66,6 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 			pip1 = controlPoints[segmentNumber + 1];
 		}
 
-
-		//The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
-		//Vector3 a = 0.5f * 2f * p1;
-		//Vector3 b = 0.5f * p0p - p0;
-		//Vector3 c = 0.5f * 2f * p0 - 5f * p1 + 4f * p0p - p1p;
-		//Vector3 d = 0.5f * -p0 + 3f * p1 - 3f * p0p + p1p;
 
 		Vector3 c0 = pim1;
 		Vector3 c1 = (-t) * pim2 + (t) * pi;
