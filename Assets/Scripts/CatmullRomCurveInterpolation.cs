@@ -23,6 +23,8 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	int numPoints;
 	int pointTracker;
 
+	public float interval;
+
 	//GameObject tempcube;
 
 	/* Returns a point on a cubic Catmull-Rom/Blended Parabolas curve
@@ -143,6 +145,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		arcPos = 0;
 		numPoints = 0;
 		pointTracker = 0;
+		interval = 0.1f;
 
 		controlPoints = new Vector3[NumberOfPoints];
 		
@@ -173,19 +176,18 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		//int num = 2;
 
 		time += DT;
-		float interval = 0.05f;
         if (time > interval)
         {
 			if(arcPos > (numPoints / 2))
 			{
-				interval += 0.01f;
+				interval += 0.005f;
 				Debug.Log("decelerating");
             }
 			else// if (arcPos > (numPoints / 4))
             {
 				if(interval > 0.01f)
                 {
-					interval -= 0.01f;
+					interval -= 0.005f;
 				}
 
 				Debug.Log("accerlating");
