@@ -20,6 +20,8 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	int segment_number;
 	Vector3[] arcPoints;
 	int arcPos;
+	int numPoints;
+	int pointTracker;
 
 	//GameObject tempcube;
 
@@ -121,6 +123,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 				Vector3 newPos = ComputePointOnCatmullRomCurve(t, i);
                 arcPoints[arrPos] = newPos;
 				arrPos += 1;
+				numPoints += 1;
 
 				//Draw this line segment
 				//Gizmos.DrawLine(lastPos, newPos);
@@ -138,6 +141,8 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	void Start () {
 
 		arcPos = 0;
+		numPoints = 0;
+		pointTracker = 0;
 
 		controlPoints = new Vector3[NumberOfPoints];
 		
@@ -172,6 +177,16 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		float interval = 0.1f;
         if (time > interval)
         {
+			if(arcPos > (numPoints / 2))
+			{
+				interval += 0.005f;
+				Debug.Log("decelerating");
+            }
+			else if (arcPos > (numPoints / 4))
+            {
+				interval -= 0.01f;
+				Debug.Log("accerlating");
+            }
 			transform.position = arcPoints[arcPos];
 			arcPos += 1;
 			time = 0;
