@@ -165,7 +165,6 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		
 		GenerateControlPointGeometry();
 		CalculateArcs();
-		Debug.Log(arcPoints);
 	}
 	
 	// Update is called once per frame
@@ -174,17 +173,21 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		//int num = 2;
 
 		time += DT;
-		float interval = 0.1f;
+		float interval = 0.05f;
         if (time > interval)
         {
 			if(arcPos > (numPoints / 2))
 			{
-				interval += 0.005f;
+				interval += 0.01f;
 				Debug.Log("decelerating");
             }
-			else if (arcPos > (numPoints / 4))
+			else// if (arcPos > (numPoints / 4))
             {
-				interval -= 0.01f;
+				if(interval > 0.01f)
+                {
+					interval -= 0.01f;
+				}
+
 				Debug.Log("accerlating");
             }
 			transform.position = arcPoints[arcPos];
