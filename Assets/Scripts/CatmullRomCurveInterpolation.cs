@@ -18,7 +18,9 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	const double DT = 0.01;
 
 	int segment_number;
-	
+	Vector3[] arcPoints;
+	int arcPos;
+
 	//GameObject tempcube;
 
 	/* Returns a point on a cubic Catmull-Rom/Blended Parabolas curve
@@ -72,7 +74,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		Vector3 c2 = (2*t * pim2) + ((t-3) * pim1) + ((3 - 2*t) * pi) + ((-t) *  pip1);
 		Vector3 c3 = ((-t) * pim2) + ((2 - t) * pim1) + ((t - 2) * pi) + (t * pip1);
 
-		//The cubic polynomial: a + b * u + c * u^2 + d * u^3
+		//The cubic polynomial: c0 + c1 * u + c2 * u^2 + c3 * u^3
 		point = (c0 + (c1 * (float)u) + (c2 * (float)u * (float)u) + (c3 * (float)u * (float)u * (float)u));
 
 
@@ -93,9 +95,49 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 			tempcube.transform.position = controlPoints[i];
 		}	
 	}
+
+    Vector3[] CalculateArcs()
+	{
+		arcPoints = new Vector3[1000];
+		int arrPos = 0;
+		for(int i = 0; i < NumberOfPoints; i++)
+        {
+			//The start position of the line
+			Vector3 lastPos = controlPoints[i];
+
+			//The spline's resolution
+			//Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
+			float resolution = 0.1f;
+
+			//How many times should we loop?
+			int loops = Mathf.FloorToInt(1f / resolution);
+
+			for (int j = 1; j <= loops; j++)
+			{
+				//Which t position are we at?
+				float t = j * resolution;
+
+				//Find the coordinate between the end points with a Catmull-Rom spline
+				Vector3 newPos = ComputePointOnCatmullRomCurve(t, i);
+                arcPoints[arrPos] = newPos;
+				arrPos += 1;
+
+				//Draw this line segment
+				//Gizmos.DrawLine(lastPos, newPos);
+
+				//Save this pos so we can draw the next line segment
+				lastPos = newPos;
+			}
+		}
+
+		return arcPoints;
+	}
+
 	
 	// Use this for initialization
 	void Start () {
+
+		arcPos = 0;
 
 		controlPoints = new Vector3[NumberOfPoints];
 		
@@ -117,33 +159,42 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		*/
 		
 		GenerateControlPointGeometry();
+		CalculateArcs();
+		Debug.Log(arcPoints);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		int num = 2;
+		//int num = 2;
 
 		time += DT;
-        //if (Vector3.Distance(transform.position, controlPoints[segment_number]) > 1)
-		if(time/num < 1)
-		{
-            Vector3 temp = ComputePointOnCatmullRomCurve(time/num, segment_number);
-            transform.position = temp;
-        }
-        else
+		float interval = 0.1f;
+        if (time > interval)
         {
-			Debug.Log(segment_number);
-            time = 0;
-            if (segment_number < NumberOfPoints - 1)
-            {
-				segment_number += 1;
-            }
-            else
-            {
-				segment_number = 0;
-            }
+			transform.position = arcPoints[arcPos];
+			arcPos += 1;
+			time = 0;
         }
+  //      //if (Vector3.Distance(transform.position, controlPoints[segment_number]) > 1)
+		//if(time/num < 1)
+		//{
+  //          Vector3 temp = ComputePointOnCatmullRomCurve(time/num, segment_number);
+  //          transform.position = temp;
+  //      }
+  //      else
+  //      {
+		//	Debug.Log(segment_number);
+  //          time = 0;
+  //          if (segment_number < NumberOfPoints - 1)
+  //          {
+		//		segment_number += 1;
+  //          }
+  //          else
+  //          {
+		//		segment_number = 0;
+  //          }
+  //      }
 
         // TODO - use time to determine values for u and segment_number in this function call
 
