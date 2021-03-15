@@ -17,11 +17,9 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	double time = 0;
 	const double DT = 0.01;
 
-	int segment_number;
 	Vector3[] arcPoints;
 	int arcPos;
 	int numPoints;
-	int pointTracker;
 
 	public float interval;
 
@@ -106,35 +104,23 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		int arrPos = 0;
 		for(int i = 0; i < NumberOfPoints; i++)
         {
-			//The start position of the line
-			Vector3 lastPos = controlPoints[i];
-
-			//The spline's resolution
-			//Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
+			//number of points between two control points
 			float resolution = 0.1f;
-
-			//How many times should we loop?
-			int loops = Mathf.FloorToInt(1f / resolution);
-
-			for (int j = 1; j <= loops; j++)
+			//determines where on the curve to put the points based off resolution
+			int stops = Mathf.FloorToInt(1f / resolution);
+			for (int j = 1; j <= stops; j++)
 			{
 				//Which t position are we at?
-				float t = j * resolution;
-
+				float u = j * resolution;
 				//Find the coordinate between the end points with a Catmull-Rom spline
-				Vector3 newPos = ComputePointOnCatmullRomCurve(t, i);
-                arcPoints[arrPos] = newPos;
+				arcPoints[arrPos] = ComputePointOnCatmullRomCurve(u, i);
 				arrPos += 1;
 				numPoints += 1;
-
-				//Draw this line segment
-				//Gizmos.DrawLine(lastPos, newPos);
-
-				//Save this pos so we can draw the next line segment
-				lastPos = newPos;
 			}
+			arcPoints[arrPos] = controlPoints[i];
+			arrPos += 1;
+			numPoints += 1;
 		}
-
 		return arcPoints;
 	}
 
@@ -144,7 +130,6 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 
 		arcPos = 0;
 		numPoints = 0;
-		pointTracker = 0;
 		interval = 0.1f;
 
 		controlPoints = new Vector3[NumberOfPoints];
@@ -172,9 +157,6 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-		//int num = 2;
-
 		time += DT;
         if (time > interval)
         {
@@ -183,7 +165,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 				interval += 0.005f;
 				Debug.Log("decelerating");
             }
-			else// if (arcPos > (numPoints / 4))
+			else
             {
 				if(interval > 0.01f)
                 {
@@ -196,28 +178,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 			arcPos += 1;
 			time = 0;
         }
-  //      //if (Vector3.Distance(transform.position, controlPoints[segment_number]) > 1)
-		//if(time/num < 1)
-		//{
-  //          Vector3 temp = ComputePointOnCatmullRomCurve(time/num, segment_number);
-  //          transform.position = temp;
-  //      }
-  //      else
-  //      {
-		//	Debug.Log(segment_number);
-  //          time = 0;
-  //          if (segment_number < NumberOfPoints - 1)
-  //          {
-		//		segment_number += 1;
-  //          }
-  //          else
-  //          {
-		//		segment_number = 0;
-  //          }
-  //      }
-
         // TODO - use time to determine values for u and segment_number in this function call
-
 
     }
 }
