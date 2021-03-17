@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CatmullRomCurveInterpolation : MonoBehaviour {
 	
@@ -22,6 +24,7 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 	int numPoints;
 
 	public float interval;
+	IList<GameObject> dots = new List<GameObject>();
 
 	//GameObject tempcube;
 
@@ -123,7 +126,6 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		}
 		return arcPoints;
 	}
-
 	
 	// Use this for initialization
 	void Start () {
@@ -153,8 +155,23 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 		
 		GenerateControlPointGeometry();
 		CalculateArcs();
+
+		//Handles.color = Color.yellow;
+		//for (int i = 0; i < arcPoints.Length - 1; i++)
+		//{
+		//	Handles.DrawLine(arcPoints[i], arcPoints[i + 1]);
+		//}
+
 	}
-	
+	void OnDrawGizmosSelected()
+	{
+		for (int i = 0; i < NumberOfPoints - 1; i++)
+		{
+			Debug.Log("Here");
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawLine(arcPoints[i], arcPoints[i + 1]);
+		}
+	}
 	// Update is called once per frame
 	void Update () {
 		time += DT;
@@ -175,6 +192,16 @@ public class CatmullRomCurveInterpolation : MonoBehaviour {
 				Debug.Log("accerlating");
             }
 			transform.position = arcPoints[arcPos];
+
+			if (arcPos > 0)
+            {
+				GameObject dot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+				dot.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+				var renderer = dot.transform.GetComponent<Renderer>();
+				renderer.material.SetColor("_Color", Color.yellow);
+				dot.transform.position = arcPoints[arcPos - 1];
+			}
+			
 			arcPos += 1;
 			time = 0;
         }
